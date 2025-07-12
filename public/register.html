@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registrasi Admin</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-50 h-screen flex items-center justify-center">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold mb-4 text-center">Registrasi Admin</h2>
+    <form id="formRegister">
+      <input name="username" type="text" placeholder="Username" required class="border p-2 w-full mb-3">
+      <input name="email" type="email" placeholder="Email" required class="border p-2 w-full mb-3">
+      <input name="password" type="password" placeholder="Password" required class="border p-2 w-full mb-3">
+      <input name="confirmPassword" type="password" placeholder="Konfirmasi Password" required class="border p-2 w-full mb-3">
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded w-full">Daftar</button>
+      <p id="errorMsg" class="text-red-500 mt-2 text-center"></p>
+      <p id="successMsg" class="text-green-600 mt-2 text-center"></p>
+    </form>
+    <div class="text-center mt-4">
+      <a href="login.html" class="text-blue-500 hover:underline">Kembali ke Login</a>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('formRegister').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      const res = await fetch('/api/admin/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        document.getElementById('successMsg').innerText = result.message;
+        document.getElementById('errorMsg').innerText = "";
+        setTimeout(() => location.href = 'login.html', 1500);
+      } else {
+        document.getElementById('errorMsg').innerText = result.message;
+        document.getElementById('successMsg').innerText = "";
+      }
+    });
+  </script>
+</body>
+</html>

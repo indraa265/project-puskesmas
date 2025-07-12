@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jadwal Pemeriksaan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2e0d6e6d6.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" alt="Logo" class="rounded-full" width="40" />
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 ml-[260px]">
+      <h1 class="text-2xl font-bold mb-4">Jadwal Pemeriksaan</h1>
+      <button onclick="openModal()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Tambah Jadwal</button>
+
+      <table class="min-w-full bg-white shadow rounded overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="py-2 px-4">ID</th>
+            <th class="py-2 px-4">ID Pasien</th>
+            <th class="py-2 px-4">ID Dokter</th>
+            <th class="py-2 px-4">Tanggal</th>
+            <th class="py-2 px-4">Waktu</th>
+            <th class="py-2 px-4">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="jadwalList" class="text-center"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalJadwal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded w-full max-w-md">
+      <form id="formJadwal">
+        <h2 class="text-xl font-bold mb-4">Form Jadwal</h2>
+        <input type="hidden" name="id" />
+        <input name="id_pasien" placeholder="ID Pasien" required class="border p-2 w-full mb-2" />
+        <input name="id_dokter" placeholder="ID Dokter" required class="border p-2 w-full mb-2" />
+        <input type="date" name="tanggal" required class="border p-2 w-full mb-2" />
+        <input type="time" name="waktu" required class="border p-2 w-full mb-2" />
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" onclick="closeModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modalJadwal');
+    const form = document.getElementById('formJadwal');
+    const tbody = document.getElementById('jadwalList');
+
+    function openModal(data = {}) {
+      modal.classList.remove('hidden');
+      form.id.value = data._id || '';
+      form.id_pasien.value = data.id_pasien || '';
+      form.id_dokter.value = data.id_dokter || '';
+      form.tanggal.value = data.tanggal?.substring(0, 10) || '';
+      form.waktu.value = data.waktu || '';
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+      form.reset();
+    }
+
+    async function loadJadwal() {
+      const res = await fetch('/api/jadwal');
+      const data = await res.json();
+      tbody.innerHTML = data.map(j => `
+        <tr class="border-t">
+          <td class="py-2 px-4">${j._id}</td>
+          <td class="py-2 px-4">${j.id_pasien}</td>
+          <td class="py-2 px-4">${j.id_dokter}</td>
+          <td class="py-2 px-4">${j.tanggal?.substring(0, 10)}</td>
+          <td class="py-2 px-4">${j.waktu}</td>
+          <td class="py-2 px-4">
+            <button onclick='openModal(${JSON.stringify(j)})' class="text-yellow-500"><i class="fas fa-edit"></i></button>
+            <button onclick="hapusJadwal('${j._id}')" class="text-red-500 ml-2"><i class="fas fa-trash"></i></button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(form).entries());
+      const method = data.id ? 'PUT' : 'POST';
+      const url = data.id ? `/api/jadwal/${data.id}` : '/api/jadwal';
+      delete data.id;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        closeModal();
+        loadJadwal();
+        alert('✅ Jadwal disimpan');
+      } else {
+        alert('❌ Gagal menyimpan');
+      }
+    });
+
+    async function hapusJadwal(id) {
+      if (confirm('Yakin ingin menghapus?')) {
+        const res = await fetch(`/api/jadwal/${id}`, { method: 'DELETE' });
+        if (res.ok) loadJadwal();
+      }
+    }
+
+    window.onload = loadJadwal;
+  </script>
+</body>
+</html>

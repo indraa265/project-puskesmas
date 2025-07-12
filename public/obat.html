@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Data Obat</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" alt="Logo" class="rounded-full" width="40" />
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+  <div class="flex-1 p-6 ml-[260px]">
+    <h1 class="text-2xl font-bold mb-4">Data Obat</h1>
+    <button onclick="openModalTambah()" class="bg-blue-600 text-white px-4 py-2 rounded mb-4">Tambah Obat</button>
+
+    <table class="min-w-full bg-white shadow rounded overflow-hidden">
+      <thead class="bg-gray-200 text-left">
+        <tr>
+          <th class="p-2">ID</th>
+          <th class="p-2">Nama</th>
+          <th class="p-2">Jenis</th>
+          <th class="p-2">Harga</th>
+          <th class="p-2">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="obatList" class="divide-y"></tbody>
+    </table>
+  </div>
+
+  <!-- Modal Tambah/Edit -->
+  <div id="modalObat" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded w-full max-w-lg">
+      <form id="formObat">
+        <h2 class="text-xl font-bold mb-4">Form Obat</h2>
+        <input type="hidden" name="id" id="obatId">
+        <input name="nama_obat" id="nama_obat" placeholder="Nama Obat" required class="border p-2 w-full mb-2">
+        <input name="jenis_obat" id="jenis_obat" placeholder="Jenis Obat" required class="border p-2 w-full mb-2">
+        <input name="harga" id="harga" placeholder="Harga" required type="number" class="border p-2 w-full mb-2">
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" onclick="closeModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modalObat');
+    const form = document.getElementById('formObat');
+    const obatList = document.getElementById('obatList');
+
+    function openModalTambah() {
+      form.reset();
+      document.getElementById('obatId').value = '';
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    async function loadData() {
+      const res = await fetch('/api/obat');
+      const data = await res.json();
+      obatList.innerHTML = data.map(item => `
+        <tr>
+          <td class="p-2">${item._id}</td>
+          <td class="p-2">${item.nama_obat}</td>
+          <td class="p-2">${item.jenis_obat}</td>
+          <td class="p-2">Rp${parseFloat(item.harga).toLocaleString()}</td>
+          <td class="p-2 space-x-2">
+            <button onclick='editObat(${JSON.stringify(item)})' class="text-yellow-500">Edit</button>
+            <button onclick="hapusObat('${item._id}')" class="text-red-500">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this).entries());
+
+      const method = data.id ? 'PUT' : 'POST';
+      const url = data.id ? `/api/obat/${data.id}` : '/api/obat';
+      if (data.id) delete data.id;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('✅ Data disimpan');
+        closeModal();
+        loadData();
+      } else {
+        alert('❌ Gagal menyimpan');
+      }
+    });
+
+    function editObat(data) {
+      document.getElementById('obatId').value = data._id;
+      document.getElementById('nama_obat').value = data.nama_obat;
+      document.getElementById('jenis_obat').value = data.jenis_obat;
+      document.getElementById('harga').value = data.harga;
+      modal.classList.remove('hidden');
+    }
+
+    async function hapusObat(id) {
+      if (confirm('Yakin hapus data?')) {
+        const res = await fetch(`/api/obat/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert('✅ Data dihapus');
+          loadData();
+        } else {
+          alert('❌ Gagal menghapus');
+        }
+      }
+    }
+
+    window.onload = loadData;
+  </script>
+
+</body>
+</html>

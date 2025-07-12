@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Puskesmas</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" alt="Logo" class="rounded-full" width="40" />
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-file-medical-alt w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-pills w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><i class="fas fa-prescription-bottle-alt w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 ml-[260px]">
+      <div class="flex justify-between items-center">
+       <h1 class="text-2xl font-bold">DASHBOARD</h1>
+       <div class="flex items-center space-x-4">
+        <i class="fas fa-sync-alt cursor-pointer" onclick="location.reload()"></i>
+        
+        <!-- Tombol Log-Out -->
+        <button class="bg-red-500 text-white px-4 py-2 rounded" onclick="window.location.href='logout.php'">Log Out</button>
+       </div>
+      </div>
+  
+      <!-- Welcome Section -->
+      <!-- Welcome Section -->
+<div class="bg-white p-6 mt-6 rounded shadow-md">
+  <h2 class="text-xl font-bold">Selamat Datang</h2>
+  <p class="text-gray-600">Sistem Informasi Puskesmas_222050</p>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 mt-6">
+    <!-- Box Pasien -->
+    <div class="bg-green-500 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statPasien">-</div>
+      <p class="text-lg mt-1">Data Pasien</p>
+      <a href="pasien.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-users absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+
+    <!-- Box Dokter -->
+    <div class="bg-red-400 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statDokter">-</div>
+      <p class="text-lg mt-1">Data Dokter</p>
+      <a href="dokter.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-user-md absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+
+    <!-- Box Jadwal -->
+    <div class="bg-yellow-500 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statJadwal">-</div>
+      <p class="text-lg mt-1">Jadwal Pemeriksaan</p>
+      <a href="jadwal_pemeriksaan.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-calendar-alt absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+
+    <!-- Box Hasil -->
+    <div class="bg-pink-500 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statHasil">-</div>
+      <p class="text-lg mt-1">Hasil Pemeriksaan</p>
+      <a href="hasil_pemeriksaan.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-file-medical-alt absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+
+    <!-- Box Obat -->
+    <div class="bg-blue-500 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statObat">-</div>
+      <p class="text-lg mt-1">Data Obat</p>
+      <a href="obat.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-pills absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+
+    <!-- Box Resep -->
+    <div class="bg-purple-500 text-white rounded-lg shadow p-5 relative">
+      <div class="text-3xl font-bold" id="statResep">-</div>
+      <p class="text-lg mt-1">Data Resep</p>
+      <a href="resep.html" class="text-sm underline text-white mt-2 inline-block">Lihat →</a>
+      <i class="fas fa-prescription-bottle-alt absolute top-4 right-4 text-2xl opacity-40"></i>
+    </div>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+  <!-- Script Fetch Data -->
+  <script>
+    async function loadDashboardData() {
+      try {
+        const res = await fetch('/api/summary/dashboard');
+        const data = await res.json();
+        document.getElementById('statPasien').textContent = data.pasien ?? 0;
+        document.getElementById('statDokter').textContent = data.dokter ?? 0;
+        document.getElementById('statObat').textContent = data.obat ?? 0;
+        document.getElementById('statResep').textContent = data.resep ?? 0;
+        document.getElementById('statJadwal').textContent = data.jadwal ?? 0;
+        document.getElementById('statHasil').textContent = data.hasil ?? 0;
+      } catch (error) {
+        alert('❌ Gagal memuat data dashboard');
+      }
+    }
+
+    window.onload = loadDashboardData;
+  </script>
+
+</body>
+</html>
+

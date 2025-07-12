@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dokter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a2d04c6774.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img alt="Logo Puskesmas" class="rounded-full" height="40" src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" width="40"/>
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="flex-1 ml-[260px] p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold">Data Dokter</h1>
+      <button onclick="openModalTambah()" class="bg-blue-600 text-white px-4 py-2 rounded">+ Tambah Dokter</button>
+    </div>
+
+    <div class="bg-white rounded shadow p-4">
+      <table class="w-full text-left border border-gray-300">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 border">ID</th>
+            <th class="p-2 border">Nama</th>
+            <th class="p-2 border">Spesialis</th>
+            <th class="p-2 border">Kontak</th>
+            <th class="p-2 border">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="tabelDokter" class="text-sm"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MODAL TAMBAH/EDIT -->
+  <div id="modalDokter" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded shadow w-full max-w-lg">
+      <form id="formDokter">
+        <h2 class="text-xl font-bold mb-4" id="modalTitle">Tambah Dokter</h2>
+        <input type="hidden" name="id" id="dokterId">
+        <input name="nama" id="nama" placeholder="Nama Dokter" required class="border p-2 w-full mb-2">
+        <input name="spesialis" id="spesialis" placeholder="Spesialis" required class="border p-2 w-full mb-2">
+        <input name="kontak" id="kontak" placeholder="Kontak" required class="border p-2 w-full mb-4">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="tutupModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    let dataDokter = [];
+
+    async function loadDokter() {
+      const res = await fetch("/api/dokter");
+      dataDokter = await res.json();
+      const tbody = document.getElementById("tabelDokter");
+      tbody.innerHTML = dataDokter.map(d => `
+        <tr class="hover:bg-gray-100">
+          <td class="p-2 border">${d._id || '-'}</td>
+          <td class="p-2 border">${d.nama}</td>
+          <td class="p-2 border">${d.spesialis}</td>
+          <td class="p-2 border">${d.kontak}</td>
+          <td class="p-2 border">
+            <button class="text-yellow-500 mr-2" onclick="editDokter('${d._id}')">Edit</button>
+            <button class="text-red-500" onclick="hapusDokter('${d._id}')">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openModalTambah() {
+      document.getElementById("modalTitle").innerText = "Tambah Dokter";
+      document.getElementById("formDokter").reset();
+      document.getElementById("dokterId").value = '';
+      document.getElementById("modalDokter").classList.remove("hidden");
+    }
+
+    function tutupModal() {
+      document.getElementById("modalDokter").classList.add("hidden");
+    }
+
+    function editDokter(id) {
+      const dokter = dataDokter.find(d => d._id === id);
+      document.getElementById("modalTitle").innerText = "Edit Dokter";
+      document.getElementById("dokterId").value = dokter._id;
+      document.getElementById("nama").value = dokter.nama;
+      document.getElementById("spesialis").value = dokter.spesialis;
+      document.getElementById("kontak").value = dokter.kontak;
+      document.getElementById("modalDokter").classList.remove("hidden");
+    }
+
+    async function hapusDokter(id) {
+      if (!confirm("Yakin ingin menghapus dokter ini?")) return;
+      await fetch(`/api/dokter/${id}`, { method: 'DELETE' });
+      loadDokter();
+    }
+
+    document.getElementById("formDokter").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this));
+      const method = data.id ? 'PUT' : 'POST';
+      const url = data.id ? `/api/dokter/${data.id}` : `/api/dokter`;
+      delete data.id;
+
+      await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      tutupModal();
+      loadDokter();
+    });
+
+    window.onload = loadDokter;
+  </script>
+</body>
+</html>

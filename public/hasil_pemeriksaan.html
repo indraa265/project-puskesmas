@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Hasil Pemeriksaan</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" alt="Logo" class="rounded-full" width="40" />
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+    <div class="flex-1 p-6 ml-[260px]">
+      <h1 class="text-2xl font-bold mb-4">Hasil Pemeriksaan</h1>
+      <button onclick="openModalTambah()" class="bg-blue-600 text-white px-4 py-2 rounded mb-4">Tambah Hasil</button>
+
+      <table class="min-w-full bg-white shadow rounded overflow-hidden">
+        <thead>
+          <tr class="bg-gray-200 text-left">
+            <th class="p-2">ID</th>
+            <th class="p-2">Nama Pasien</th>
+            <th class="p-2">Nama Dokter</th>
+            <th class="p-2">Diagnosa</th>
+            <th class="p-2">Tanggal</th>
+            <th class="p-2">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="hasilList" class="divide-y"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit -->
+  <div id="modalHasil" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded w-full max-w-lg">
+      <form id="formHasil">
+        <h2 class="text-xl font-bold mb-4">Form Hasil Pemeriksaan</h2>
+        <input type="hidden" name="id" id="hasilId">
+
+        <select name="nama_pasien" id="nama_pasien" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Pasien</option>
+        </select>
+
+        <select name="nama_dokter" id="nama_dokter" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Dokter</option>
+        </select>
+
+        <input name="diagnosa" id="diagnosa" placeholder="Diagnosa" required class="border p-2 w-full mb-2">
+        <input type="date" name="tanggal" id="tanggal" required class="border p-2 w-full mb-2">
+
+        <div class="flex justify-end gap-2 mt-4">
+          <button type="button" onclick="closeModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const modal = document.getElementById('modalHasil');
+    const form = document.getElementById('formHasil');
+    const hasilList = document.getElementById('hasilList');
+
+    function openModalTambah() {
+      form.reset();
+      document.getElementById('hasilId').value = '';
+      loadDropdowns();
+      modal.classList.remove('hidden');
+    }
+
+    function closeModal() {
+      modal.classList.add('hidden');
+    }
+
+    async function loadDropdowns() {
+      const pasienRes = await fetch('/api/pasien');
+      const dokterRes = await fetch('/api/dokter');
+
+      const pasienData = await pasienRes.json();
+      const dokterData = await dokterRes.json();
+
+      const pasienSelect = document.getElementById('nama_pasien');
+      const dokterSelect = document.getElementById('nama_dokter');
+
+      pasienSelect.innerHTML = pasienData.map(p => `<option value="${p.nama}">${p.nama}</option>`).join('');
+      dokterSelect.innerHTML = dokterData.map(d => `<option value="${d.nama}">${d.nama}</option>`).join('');
+    }
+
+    async function loadData() {
+      const res = await fetch('/api/hasil');
+      const data = await res.json();
+      hasilList.innerHTML = data.map(item => `
+        <tr>
+          <td class="p-2">${item._id}</td>
+          <td class="p-2">${item.nama_pasien}</td>
+          <td class="p-2">${item.nama_dokter}</td>
+          <td class="p-2">${item.diagnosa}</td>
+          <td class="p-2">${new Date(item.tanggal).toLocaleDateString()}</td>
+          <td class="p-2 space-x-2">
+            <button onclick='editHasil(${JSON.stringify(item)})' class="text-yellow-500">Edit</button>
+            <button onclick="hapusHasil('${item._id}')" class="text-red-500">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const data = Object.fromEntries(new FormData(this).entries());
+
+      const method = data.id ? 'PUT' : 'POST';
+      const url = data.id ? `/api/hasil/${data.id}` : '/api/hasil';
+      if (data.id) delete data.id;
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('✅ Data disimpan');
+        closeModal();
+        loadData();
+      } else {
+        alert('❌ Gagal menyimpan');
+      }
+    });
+
+    function editHasil(data) {
+      document.getElementById('hasilId').value = data._id;
+      loadDropdowns().then(() => {
+        document.getElementById('nama_pasien').value = data.nama_pasien;
+        document.getElementById('nama_dokter').value = data.nama_dokter;
+      });
+      document.getElementById('diagnosa').value = data.diagnosa;
+      document.getElementById('tanggal').value = data.tanggal.slice(0, 10);
+      modal.classList.remove('hidden');
+    }
+
+    async function hapusHasil(id) {
+      if (confirm('Yakin hapus data?')) {
+        const res = await fetch(`/api/hasil/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          alert('✅ Data dihapus');
+          loadData();
+        } else {
+          alert('❌ Gagal menghapus');
+        }
+      }
+    }
+
+    window.onload = loadData;
+  </script>
+</body>
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pasien</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img alt="Logo Puskesmas" class="rounded-full" height="40" src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" width="40"/>
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+     <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="resep.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 ml-[260px]">
+    <h1 class="text-2xl font-bold mb-4">Daftar Pasien</h1>
+    <button onclick="openModalTambah()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Tambah Pasien</button>
+
+    <!-- Tabel Pasien -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white border border-gray-300 rounded shadow">
+        <thead>
+          <tr>
+            <th class="py-2 px-4 border-b">NIK</th>
+            <th class="py-2 px-4 border-b">Nama</th>
+            <th class="py-2 px-4 border-b">Alamat</th>
+            <th class="py-2 px-4 border-b">Kontak</th>
+            <th class="py-2 px-4 border-b">Jenis Kelamin</th>
+            <th class="py-2 px-4 border-b">Keluhan</th>
+            <th class="py-2 px-4 border-b">Status</th>
+            <th class="py-2 px-4 border-b">Tipe Kamar</th>
+            <th class="py-2 px-4 border-b">Harga Kamar</th>
+            <th class="py-2 px-4 border-b">Tanggal</th>
+            <th class="py-2 px-4 border-b">Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="listPasien"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal Tambah/Edit -->
+  <div id="modalTambahPasien" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center">
+    <div class="bg-white p-6 rounded w-full max-w-lg">
+      <form id="formPasien">
+        <h2 class="text-xl font-bold mb-4" id="formTitle">Tambah Pasien</h2>
+        <input type="hidden" name="_id" />
+        <input name="nik" placeholder="NIK" required class="border p-2 w-full mb-2">
+        <input name="nama" placeholder="Nama" required class="border p-2 w-full mb-2">
+        <input name="alamat" placeholder="Alamat" required class="border p-2 w-full mb-2">
+        <input name="kontak" placeholder="Kontak" required class="border p-2 w-full mb-2">
+        <select name="jenis_kelamin" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Jenis Kelamin</option>
+          <option value="Laki-laki">Laki-laki</option>
+          <option value="Perempuan">Perempuan</option>
+        </select>
+        <input name="keluhan" placeholder="Keluhan" required class="border p-2 w-full mb-2">
+        <select name="status" required class="border p-2 w-full mb-2">
+          <option value="">Status</option>
+          <option value="Rawat Inap">Rawat Inap</option>
+          <option value="Rawat Jalan">Rawat Jalan</option>
+        </select>
+        <input name="tipe_kamar" placeholder="Tipe Kamar" class="border p-2 w-full mb-2">
+        <input name="harga_kamar" placeholder="Harga Kamar" class="border p-2 w-full mb-2">
+        <input type="date" name="tanggal" required class="border p-2 w-full mb-2">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="cancelTambah()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    async function loadPasien() {
+      const res = await fetch('/api/pasien');
+      const data = await res.json();
+      const container = document.getElementById('listPasien');
+      container.innerHTML = data.map(p => `
+        <tr class="hover:bg-gray-100">
+          <td class="py-2 px-4 border-b">${p.nik}</td>
+          <td class="py-2 px-4 border-b">${p.nama}</td>
+          <td class="py-2 px-4 border-b">${p.alamat}</td>
+          <td class="py-2 px-4 border-b">${p.kontak}</td>
+          <td class="py-2 px-4 border-b">${p.jenis_kelamin}</td>
+          <td class="py-2 px-4 border-b">${p.keluhan}</td>
+          <td class="py-2 px-4 border-b">${p.status}</td>
+          <td class="py-2 px-4 border-b">${p.tipe_kamar || '-'}</td>
+          <td class="py-2 px-4 border-b">${p.harga_kamar || '-'}</td>
+          <td class="py-2 px-4 border-b">${p.tanggal?.substring(0,10)}</td>
+          <td class="py-2 px-4 border-b">
+            <button onclick='editPasien(${JSON.stringify(p)})' class="text-yellow-600 mr-2">Edit</button>
+            <button onclick='hapusPasien("${p._id}")' class="text-red-600">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openModalTambah() {
+      document.getElementById('modalTambahPasien').classList.remove('hidden');
+      document.getElementById('formPasien').reset();
+      document.querySelector('[name="_id"]').value = "";
+      document.getElementById('formTitle').textContent = "Tambah Pasien";
+    }
+
+    function cancelTambah() {
+      document.getElementById('modalTambahPasien').classList.add('hidden');
+    }
+
+    function editPasien(p) {
+      openModalTambah();
+      document.getElementById('formTitle').textContent = "Edit Pasien";
+      Object.keys(p).forEach(k => {
+        const el = document.querySelector(`[name="${k}"]`);
+        if (el) el.value = p[k];
+      });
+    }
+
+    async function hapusPasien(id) {
+      if (!confirm("Yakin ingin menghapus data ini?")) return;
+      const res = await fetch(`/api/pasien/${id}`, { method: 'DELETE' });
+      if (res.ok) {
+        alert("✅ Data berhasil dihapus");
+        loadPasien();
+      } else {
+        alert("❌ Gagal menghapus data");
+      }
+    }
+
+    document.getElementById('formPasien').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      const method = data._id ? 'PUT' : 'POST';
+      const url = data._id ? `/api/pasien/${data._id}` : '/api/pasien';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('✅ Data berhasil disimpan');
+        cancelTambah();
+        loadPasien();
+      } else {
+        alert('❌ Gagal menyimpan data');
+      }
+    });
+
+    window.onload = loadPasien;
+  </script>
+</body>
+</html>

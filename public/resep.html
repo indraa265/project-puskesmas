@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Resep</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body class="bg-green-100">
+  <div class="flex">
+    <!-- Sidebar -->
+    <div class="w-[260px] bg-white h-screen shadow-md fixed top-0 left-0 overflow-y-auto">
+      <div class="p-4 flex items-center">
+        <img src="https://puskesmasmuncan.lomboktengahkab.go.id/uploads/images/Logo_Puskesmas_Tanpa_Background.png" alt="Logo" class="rounded-full" width="40" />
+        <div class="ml-4">
+          <h1 class="text-xl font-bold">Puskesmas</h1>
+          <p class="text-sm text-gray-600">Sistem Informasi Puskesmas_222050</p>
+        </div>
+      </div>
+      <nav class="mt-6">
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="index.html"><i class="fas fa-tachometer-alt w-6"></i><span class="ml-3">Dashboard</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="pasien.html"><i class="fas fa-users w-6"></i><span class="ml-3">Pasien</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="dokter.html"><i class="fas fa-user-nurse w-6"></i><span class="ml-3">Dokter</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="jadwal_pemeriksaan.html"><i class="fas fa-calendar-alt w-6"></i><span class="ml-3">Jadwal Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="hasil_pemeriksaan.html"><i class="fas fa-notes-medical w-6"></i><span class="ml-3">Hasil Pemeriksaan</span></a>
+        <a class="flex items-center p-2 text-gray-700 hover:bg-gray-200" href="obat.html"><i class="fas fa-capsules w-6"></i><span class="ml-3">Obat</span></a>
+        <a class="flex items-center p-2 bg-blue-100 text-blue-700 font-bold" href="resep.html"><i class="fas fa-file-prescription w-6"></i><span class="ml-3">Resep</span></a>
+      </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 p-6 ml-[260px]">
+      <h1 class="text-2xl font-bold mb-4">Daftar Resep</h1>
+      <button onclick="openModalTambah()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">+ Tambah Resep</button>
+
+      <div class="overflow-x-auto bg-white p-4 rounded shadow">
+        <table class="min-w-full text-sm text-left">
+          <thead class="bg-gray-200">
+            <tr>
+              <th class="px-4 py-2">Nama Pasien</th>
+              <th class="px-4 py-2">Nama Dokter</th>
+              <th class="px-4 py-2">Nama Obat</th>
+              <th class="px-4 py-2">Dosis</th>
+              <th class="px-4 py-2">Tanggal</th>
+              <th class="px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tabelResep" class="divide-y"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modalResep" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50">
+    <div class="bg-white p-6 rounded w-full max-w-md">
+      <form id="formResep">
+        <h2 class="text-xl font-bold mb-4" id="modalTitle">Tambah Resep</h2>
+        <input type="hidden" name="id" id="resepId">
+        <select name="nama_pasien" id="nama_pasien" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Pasien</option>
+        </select>
+        <select name="nama_dokter" id="nama_dokter" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Dokter</option>
+        </select>
+        <select name="nama_obat" id="nama_obat" required class="border p-2 w-full mb-2">
+          <option value="">Pilih Obat</option>
+        </select>
+        <input name="dosis" id="dosis" placeholder="Dosis" required class="border p-2 w-full mb-2">
+        <input type="date" name="tanggal" id="tanggal" required class="border p-2 w-full mb-4">
+        <div class="flex justify-end gap-2">
+          <button type="button" onclick="tutupModal()" class="bg-gray-400 text-white px-4 py-2 rounded">Batal</button>
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Script -->
+  <script>
+    const modal = document.getElementById('modalResep');
+    const form = document.getElementById('formResep');
+    const tabelResep = document.getElementById('tabelResep');
+    const modalTitle = document.getElementById('modalTitle');
+
+    async function loadResep() {
+      const res = await fetch('/api/resep');
+      const data = await res.json();
+      tabelResep.innerHTML = data.map(r => `
+        <tr>
+          <td class="px-4 py-2">${r.nama_pasien}</td>
+          <td class="px-4 py-2">${r.nama_dokter}</td>
+          <td class="px-4 py-2">${r.nama_obat}</td>
+          <td class="px-4 py-2">${r.dosis}</td>
+          <td class="px-4 py-2">${new Date(r.tanggal).toLocaleDateString()}</td>
+          <td class="px-4 py-2">
+            <button onclick='editResep(${JSON.stringify(r)})' class="text-yellow-600 mr-2">Edit</button>
+            <button onclick="hapusResep('${r._id}')" class="text-red-600">Hapus</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    async function isiDropdown() {
+      const pasienRes = await fetch('/api/pasien');
+      const dokterRes = await fetch('/api/dokter');
+      const obatRes = await fetch('/api/obat');
+      const pasien = await pasienRes.json();
+      const dokter = await dokterRes.json();
+      const obat = await obatRes.json();
+
+      const pasienSelect = document.getElementById('nama_pasien');
+      const dokterSelect = document.getElementById('nama_dokter');
+      const obatSelect = document.getElementById('nama_obat');
+
+      pasienSelect.innerHTML = '<option value="">Pilih Pasien</option>' +
+        pasien.map(p => `<option value="${p.nama}">${p.nama}</option>`).join('');
+
+      dokterSelect.innerHTML = '<option value="">Pilih Dokter</option>' +
+        dokter.map(d => `<option value="${d.nama}">${d.nama}</option>`).join('');
+
+      obatSelect.innerHTML = '<option value="">Pilih Obat</option>' +
+        obat.map(o => `<option value="${o.nama_obat}">${o.nama_obat}</option>`).join('');
+    }
+
+    function openModalTambah() {
+      form.reset();
+      document.getElementById('resepId').value = '';
+      modalTitle.innerText = 'Tambah Resep';
+      modal.classList.remove('hidden');
+      isiDropdown();
+    }
+
+    function tutupModal() {
+      modal.classList.add('hidden');
+    }
+
+    async function editResep(r) {
+      openModalTambah();
+      modalTitle.innerText = 'Edit Resep';
+      document.getElementById('resepId').value = r._id;
+      document.getElementById('nama_pasien').value = r.nama_pasien;
+      document.getElementById('nama_dokter').value = r.nama_dokter;
+      document.getElementById('nama_obat').value = r.nama_obat;
+      document.getElementById('dosis').value = r.dosis;
+      document.getElementById('tanggal').value = r.tanggal.slice(0, 10);
+    }
+
+    async function hapusResep(id) {
+      if (confirm('Yakin ingin menghapus resep ini?')) {
+        await fetch('/api/resep/' + id, { method: 'DELETE' });
+        loadResep();
+      }
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      const id = document.getElementById('resepId').value;
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const method = id ? 'PUT' : 'POST';
+      const url = id ? `/api/resep/${id}` : '/api/resep';
+
+      const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert('✅ Berhasil disimpan');
+        tutupModal();
+        loadResep();
+      } else {
+        alert('❌ Gagal menyimpan');
+      }
+    });
+
+    window.onload = loadResep;
+  </script>
+</body>
+</html>
