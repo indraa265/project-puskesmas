@@ -23,40 +23,6 @@ Aplikasi Sistem Informasi Pelayanan Kesehatan berbasis **Node.js & Express.js** 
 
 ## 🗂️ Struktur Folder
 
-Puskesmas/
-├── models/ # Skema/model data
-│ ├── Admin.js
-│ ├── Dokter.js
-│ ├── hasil.js
-│ ├── jadwal.js
-│ ├── obat.js
-│ ├── Pasien.js
-│ └── resep.js
-│
-├── routes/ # Routing Express
-│ ├── adminRoutes.js
-│ ├── dokterRoutes.js
-│ ├── hasilRoutes.js
-│ ├── indexRoutes.js
-│ ├── jadwalRoutes.js
-│ ├── obat.js
-│ ├── pasien.js
-│ └── resep.js
-│
-├── public/ # Tampilan HTML
-│ ├── dokter.html
-│ ├── hasil_pemeriksaan.html
-│ ├── index.html
-│ ├── jadwal_pemeriksaan.html
-│ ├── login.html
-│ ├── obat.html
-│ ├── pasien.html
-│ ├── register.html
-│ └── resep.html
-│
-├── server.js # Entry point aplikasi
-├── package.json # Daftar dependensi
-└── package-lock.json
 
 
 ---
