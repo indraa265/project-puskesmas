@@ -23,6 +23,7 @@ Aplikasi Sistem Informasi Pelayanan Kesehatan berbasis **Node.js & Express.js** 
 
 ## 🗂️ Struktur Folder
 
+<img width="143" height="358" alt="image" src="https://github.com/user-attachments/assets/26a65ae2-a712-4728-8b2e-fea8c400d90a" />
 
 
 ---
